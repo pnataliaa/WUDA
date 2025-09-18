@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Dodaj planszówkę{% endblock %}
+
+{% block content %}
+<h1>Dodaj nową planszówkę</h1>
+
+<form action="{{ url_for('add_game') }}" method="post" class="game-form">
+  <label>Tytuł:
+    <input type="text" name="title" required>
+  </label>
+  <label>Liczba graczy (np. 2-4):
+    <input type="text" name="players">
+  </label>
+  <label>Czas gry (minuty):
+    <input type="number" name="playtime">
+  </label>
+  <label>Krótki opis:
+    <textarea name="short_description"></textarea>
+  </label>
+  <label>Pełny opis:
+    <textarea name="description"></textarea>
+  </label>
+  <label>Zasady w skrócie:
+    <textarea name="rules_short"></textarea>
+  </label>
+  <label>Adres obrazka:
+    <input type="url" name="image_url">
+  </label>
+  <button type="submit" class="button">Zapisz</button>
+</form>
+{% endblock %}

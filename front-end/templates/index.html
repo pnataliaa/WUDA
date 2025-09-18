@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Przeglądaj planszówki{% endblock %}
+
+{% block content %}
+<section class="controls">
+  <input id="search" type="search" placeholder="Szukaj po tytule, autorze..." aria-label="Szukaj">
+  <select id="filter-players">
+    <option value="">Wszyscy gracze</option>
+    <option value="1-2">1-2</option>
+    <option value="2-4">2-4</option>
+    <option value="4+">4+</option>
+  </select>
+</section>
+
+<section id="games-grid" class="grid">
+  {% for game in games %}
+    {% include "_game_card.html" %}
+  {% else %}
+    <p>Brak gier do wyświetlenia.</p>
+  {% endfor %}
+</section>
+{% endblock %}
