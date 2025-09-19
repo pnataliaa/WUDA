@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for
-
+from flask import Flask, render_template, request, redirect, url_for, flash
+from utils.api_calls import check_user
 app = Flask(__name__)
 
 mock_games = [
@@ -60,6 +60,8 @@ mock_games = [
     }
 ]
 
+
+
 @app.route("/game/<int:game_id>")
 def game_detail(game_id):
     game = next((g for g in mock_games if g["id"] == game_id), None)
@@ -72,7 +74,7 @@ def add_game():
         new_game = {
             "id": len(mock_games) + 1,
             "title": request.form["title"],
-            "author": request.form.get("author", ""),
+            "owner": request.form.get("owner", ""),
             "players": request.form.get("players", ""),
             "playtime": request.form.get("playtime", ""),
             "short_description": request.form.get("short_description", ""),
@@ -87,5 +89,40 @@ def add_game():
 
 @app.route("/")
 def index():
-    games = mock_games  # twoja logika
+    games = mock_games
     return render_template('index.html', games=games)
+
+
+@app.route("/auth/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        data = request.get_json()
+        username = data['username']
+        pwd = data['password']
+        repeated_pwd = data['repeated-pwd']
+        if pwd != repeated_pwd:
+            flash("Hasła nie sa takie same", "error")
+        elif check_user(username, pwd):
+            flash("Udało się zarejestrować", "success")
+            return render_template("login.html")
+        else:
+            flash("Błedne dane logownia", "error")
+
+
+
+    return render_template('register.html')
+
+
+@app.route("/auth/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
+        if check_user(username, password):
+            flash("Udało się zalogować", "success")
+            return render_template("index.html")
+        else:
+            flash("Błedne dane logownia", "error")
+
+    return render_template('login.html')

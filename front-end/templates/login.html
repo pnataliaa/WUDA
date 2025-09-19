@@ -1,11 +1,23 @@
 {% extends "base.html" %}
 {% block title %}Logowanie{% endblock %}
 {% block content %}
-<h2>Logowanie</h2>
-<form method="post" class="form">
-  <label>Login <input type="text" name="username" required></label><br>
-  <label>Hasło <input type="password" name="password" required></label><br>
-  <button type="submit">Zaloguj</button>
-</form>
-<p>Nie masz konta? <a href="{{ url_for('register') }}">Zarejestruj się</a></p>
+<section class="form-card">
+  <h2>Logowanie</h2>
+  <form method="post" class="form">
+    <div class="form-group">
+      <label for="username">Login</label>
+      <input type="text" id="username" name="username" required>
+    </div>
+
+    <div class="form-group">
+      <label for="pwd">Hasło</label>
+      <input type="password" id="pwd" name="password" required>
+    </div>
+
+    <button type="submit" class="btn">Zaloguj</button>
+  </form>
+  <p class="form-footer">
+    Nie masz konta? <a href="{{ url_for('register') }}">Zarejestruj się</a>
+  </p>
+</section>
 {% endblock %}

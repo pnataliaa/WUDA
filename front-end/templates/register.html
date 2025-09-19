@@ -1,12 +1,28 @@
 {% extends "base.html" %}
 {% block title %}Rejestracja{% endblock %}
 {% block content %}
-<h2>Rejestracja</h2>
-<form method="post" class="form">
-  <label>Login <input type="text" name="username" required></label><br>
-  <label>Hasło <input type="password" name="pwd" required></label><br>
-   <label>Hasło <input type="password" name="repeated-pwd" required></label><br>
-  <button type="submit">Zarejestruj</button>
-</form>
-<p>Masz konto? <a href="{{ url_for('login') }}">Zaloguj się</a></p>
+<section class="form-card">
+  <h2>Rejestracja</h2>
+  <form method="post" class="form">
+    <div class="form-group">
+      <label for="username">Login</label>
+      <input type="text" id="username" name="username" required>
+    </div>
+
+    <div class="form-group">
+      <label for="pwd">Hasło</label>
+      <input type="password" id="pwd" name="pwd" required>
+    </div>
+
+    <div class="form-group">
+      <label for="repeated-pwd">Powtórz hasło</label>
+      <input type="password" id="repeated-pwd" name="repeated-pwd" required>
+    </div>
+
+    <button type="submit" class="btn">Zarejestruj</button>
+  </form>
+  <p class="form-footer">
+    Masz konto? <a href="{{ url_for('login') }}">Zaloguj się</a>
+  </p>
+</section>
 {% endblock %}
