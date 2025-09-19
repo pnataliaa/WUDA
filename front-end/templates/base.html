@@ -13,8 +13,13 @@
     <nav class="top-nav">
       <a href="{{ url_for('index') }}">Przeglądaj</a>
       <a href="{{ url_for('add_game') }}">Dodaj planszówkę</a>
-        <a href="{{ url_for('login') }}">Logowanie</a>
-        <a href="{{ url_for('register') }}">Rejestracja</a>
+      <a href="{{ url_for('forum') }}">Forum</a>
+      {% if curr_user == None or curr_user is not defined  %}
+      <a href="{{ url_for('login') }}">Logowanie</a>
+      <a href="{{ url_for('register') }}">Rejestracja</a>
+      {% else %}
+      <a href="{{ url_for('logout') }}">Wyloguj się</a>
+      {% endif %}
     </nav>
   </header>
 

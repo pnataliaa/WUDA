@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
+<article class="post">
+  <h2>{{ post.title }}</h2>
+  <p>{{ post.body }}</p>
+  <small>Autor: {{ post.author.username }} — {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+</article>
+
+<hr>
+<h3>Komentarze</h3>
+<ul class="comment-list">
+  {% for c in post.comments %}
+    <li><b>{{ c.author.username }}</b>: {{ c.body }} <small>{{ c.created_at.strftime('%Y-%m-%d %H:%M') }}</small></li>
+  {% else %}
+    <p>Brak komentarzy.</p>
+  {% endfor %}
+</ul>
+{{ curr_user }}
+{% if curr_user != None %}
+  <form method="post" class="form">
+    <textarea name="body" required placeholder="Dodaj komentarz..."></textarea>
+    <button type="submit" class="btn">Dodaj komentarz</button>
+  </form>
+{% else %}
+  <p><a href="{{ url_for('login') }}">Zaloguj się</a>, aby komentować.</p>
+{% endif %}
+{% endblock %}

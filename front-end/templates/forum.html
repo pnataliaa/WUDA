@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Forum{% endblock %}
+{% block content %}
+<h2>Wpisy na forum</h2>
+<a href="{{ url_for('new_post') }}" class="btn">Nowy wpis</a>
+<ul class="post-list">
+  {% for post in posts %}
+    <li>
+      <a href="{{ url_for('post_detail', post_id=post.id) }}">{{ post.title }}</a>
+      <small>— {{ post.author.username }} ({{ post.created_at.strftime('%Y-%m-%d %H:%M') }})</small>
+    </li>
+  {% else %}
+    <p>Brak wpisów.</p>
+  {% endfor %}
+</ul>
+{% endblock %}

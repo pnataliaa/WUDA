@@ -1,7 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
-from utils.api_calls import check_user
-app = Flask(__name__)
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+from utils.api_calls import check_user, fetch_post, fetch_posts, NewPost, add_post
+from pydantic import ValidationError
 
+app = Flask(__name__)
+app.secret_key = "asdsadsadkj"
 mock_games = [
     {
         "id": 1,
@@ -61,6 +63,15 @@ mock_games = [
 ]
 
 
+@app.context_processor
+def inject_user_info():
+    if session.get("login", None):
+        print("cokolwiek")
+        return dict(curr_user=session['login'])
+
+    return dict(curr_user=None)
+
+
 
 @app.route("/game/<int:game_id>")
 def game_detail(game_id):
@@ -93,6 +104,35 @@ def index():
     return render_template('index.html', games=games)
 
 
+
+@app.route("/forum")
+def forum():
+    posts = fetch_posts()
+    return render_template("forum.html", posts=posts)
+
+@app.route("/forum/<int:post_id>")
+def post_detail(post_id):
+    post = fetch_post(post_id)
+    return render_template("post_detail.html", post=post)
+
+@app.route("/forum/new", methods=["POST", "GET"])
+def new_post():
+    if request.method == "POST":
+            form_data = request.form.to_dict()
+
+            # Walidacja danych formularza
+            try:
+                post_data = NewPost(**form_data)
+                add_post(post_data)
+            except ValidationError as e:
+                flash("❌ Błąd walidacji: " + str(e), "error")
+                return render_template("post_form.html", form=form_data)
+
+            return redirect(url_for("forum"))
+
+    return render_template("post_form.html")
+
+
 @app.route("/auth/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -116,13 +156,22 @@ def register():
 @app.route("/auth/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        data = request.get_json()
+        data = request.form.to_dict()
         username = data['username']
         password = data['password']
         if check_user(username, password):
             flash("Udało się zalogować", "success")
-            return render_template("index.html")
+            session['login'] = username
+            return redirect("/")
         else:
             flash("Błedne dane logownia", "error")
 
     return render_template('login.html')
+
+
+
+@app.route("/auth/logout")
+def logout():
+    session.pop("login", None)
+    flash("Wylogowano", "success")
+    return redirect("/")
