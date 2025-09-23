@@ -113,7 +113,7 @@ def forum():
         posts = [p for p in posts if p.game and p.game.id == game_id]
 
     return render_template(
-        "forum.html",
+        "forum/forum.html",
         posts=posts,
         games=games,
         selected_game=game_id,
@@ -123,13 +123,13 @@ def forum():
 @app.route("/forum/<int:post_id>")
 def post_detail(post_id):
     post = fetch_post(post_id)
-    return render_template("post_detail.html", post=post)
+    return render_template("forum/post_detail.html", post=post)
 
 @app.route("/forum/<int:post_id>/", methods=["POST"])
 def post_comment(post_id):
     data = request.form.to_dict()
     add_comment(post_id, data['body'], session['login'])
-    return redirect(url_for("post_detail", post_id=post_id))
+    return redirect(url_for("forum/post_detail", post_id=post_id))
 
 
 
@@ -170,7 +170,7 @@ def register():
             flash("Użytkownik istnieje lool", "error")
 
 
-    return render_template('register.html')
+    return render_template('auth/register.html')
 
 
 @app.route("/auth/login", methods=["GET", "POST"])
@@ -185,7 +185,7 @@ def login():
             return redirect("/")
         else:
             flash("Błedne dane logownia", "error")
-    return render_template('login.html')
+    return render_template('auth/login.html')
 
 @app.route("/auth/logout")
 def logout():
