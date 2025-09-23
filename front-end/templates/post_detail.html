@@ -1,28 +1,49 @@
 {% extends "base.html" %}
 {% block title %}{{ post.title }}{% endblock %}
 {% block content %}
-<article class="post">
-  <h2>{{ post.title }}</h2>
-  <p>{{ post.body }}</p>
-  <small>Autor: {{ post.author.username }} — {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
-</article>
+<div class="forum-container">
+  <!-- 🔹 Post -->
+  <div class="post-card detail-card">
+    <h2>{{ post.title }}</h2>
+    <p class="post-meta">
+      <strong>Gra:</strong>
+      {% if post.game %}
+        {{ post.game.name }}
+      {% else %}
+        brak przypisanej gry
+      {% endif %}
+      &nbsp; | &nbsp;
+      <strong>Autor:</strong> {{ post.author.username }}
+      &nbsp; | &nbsp;
+      <strong>Data:</strong> {{ post.created_at }}
+    </p>
+    <p class="post-body">{{ post.body }}</p>
+  </div>
 
-<hr>
-<h3>Komentarze</h3>
-<ul class="comment-list">
-  {% for c in post.comments %}
-    <li><b>{{ c.author.username }}</b>: {{ c.body }} <small>{{ c.created_at.strftime('%Y-%m-%d %H:%M') }}</small></li>
-  {% else %}
-    <p>Brak komentarzy.</p>
-  {% endfor %}
-</ul>
-{{ curr_user }}
-{% if curr_user != None %}
-  <form method="post" class="form">
-    <textarea name="body" required placeholder="Dodaj komentarz..."></textarea>
-    <button type="submit" class="btn">Dodaj komentarz</button>
+  <!-- 🔹 Komentarze -->
+  <h3>Komentarze</h3>
+  <div class="comments-list">
+    {% for comment in post.comments %}
+      <div class="post-card comment-card">
+        <p class="post-meta">
+          <strong>{{ comment.author.username }}</strong>
+          &nbsp; | &nbsp;
+          {{ comment.created_at }}
+        </p>
+        <p>{{ comment.body }}</p>
+      </div>
+    {% else %}
+      <p>Brak komentarzy do wyświetlenia.</p>
+    {% endfor %}
+  </div>
+
+  <!-- 🔹 Formularz dodania komentarza -->
+  <form method="post" action="{{ url_for('post_comment', post_id=post.id) }}" class="comment-form">
+    <textarea name="body" rows="3" placeholder="Dodaj komentarz..." required></textarea>
+    <button type="submit" class="btn btn-primary">Dodaj komentarz</button>
   </form>
-{% else %}
-  <p><a href="{{ url_for('login') }}">Zaloguj się</a>, aby komentować.</p>
-{% endif %}
+
+  <!-- 🔹 Powrót -->
+  <a href="{{ url_for('forum') }}" class="btn btn-secondary">← Wróć do forum</a>
+</div>
 {% endblock %}

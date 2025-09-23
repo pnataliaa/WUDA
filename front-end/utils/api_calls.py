@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel, Field
 
 class User(BaseModel):
@@ -12,13 +12,25 @@ class Comment(BaseModel):
     created_at: datetime
     author: User
 
+class Game(BaseModel):
+    id: int
+    name: str
+
 class Post(BaseModel):
     id: int
     title: str
     body: str
     created_at: datetime
     author: User
+    game: Optional[Game] = None
     comments: List[Comment] = []
+
+class NewPost(BaseModel):
+    title: str = Field(min_length=3, max_length=120)
+    body: str = Field(min_length=5)
+    game_id: int
+
+
 
 USERS = [
     {"id": 1, "username": "adam"},
@@ -38,6 +50,10 @@ POSTS = [
         "body": "To jest treść mojego pierwszego posta!",
         "created_at": datetime(2025, 9, 19, 14, 35).isoformat(),
         "author": USERS[0],
+        "game": {
+            "name": "Carcasone",
+            "id": 2,
+        },
         "comments": [
             {
                 "id": 1,
@@ -54,19 +70,10 @@ POSTS = [
         "created_at": datetime(2025, 9, 19, 16, 10).isoformat(),
         "author": USERS[2],
         "comments": [],
+        "game": None
     }
 ]
 
-class NewPost(BaseModel):
-    title: str = Field(min_length=3, max_length=120)
-    body: str = Field(min_length=5)
-
-# users = [
-#     {
-#         "username": "John",
-#         "password": "doe"
-#     }
-# ]
 
 def fetch_posts():
     return [Post.model_validate(p) for p in POSTS]
@@ -104,3 +111,19 @@ def check_user(username: str, password: str) -> bool:
         if user[0]['password'] == password:
             return True
     return False
+
+def add_comment(post_id: int, comment_content: str, user: str) -> bool:
+    post = fetch_post(post_id)
+    # user = [user for user in USERS if user['username'] == user][0]
+    comment = Comment(
+        id=len(post.comments)+1,
+        body=comment_content,
+        created_at=datetime.now().isoformat(),
+        author=User(
+            id=1,
+            username=user
+        )
+    )
+    POSTS[post_id-1]['comments'].append(comment.model_dump())
+    print(POSTS)
+    return True

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-from utils.api_calls import check_user, fetch_post, fetch_posts, NewPost, add_post
+from utils.api_calls import check_user, fetch_post, fetch_posts, NewPost, add_post, add_user, add_comment
 from pydantic import ValidationError
 
 app = Flask(__name__)
@@ -14,7 +14,7 @@ mock_games = [
         "short_description": "Buduj osady, handluj surowcami i rywalizuj o dominację na wyspie Catan.",
         "description": "Catan to strategiczna gra ekonomiczna, w której gracze kolonizują nową wyspę, budując drogi i miasta. Surowce pozyskiwane są w zależności od rzutów kostką, a kluczowym elementem jest handel między graczami.",
         "rules_short": "Rzucasz kostkami, zbierasz surowce, wymieniasz się i budujesz.",
-        "image_url": "https://upload.wikimedia.org/wikipedia/en/2/2d/Catan-2015-boxart.jpg"
+        "image_url": "https://image.api.playstation.com/vulcan/ap/rnd/202209/2812/ev8VaiyRc42X3QgRwHIJ2b5r.jpg"
     },
     {
         "id": 2,
@@ -103,24 +103,42 @@ def index():
     games = mock_games
     return render_template('index.html', games=games)
 
-
-
 @app.route("/forum")
 def forum():
     posts = fetch_posts()
-    return render_template("forum.html", posts=posts)
+    game_id = request.args.get("game_id", type=int)
+    games = mock_games
+    use_filter = request.args.get("use_filter") == "on"
+    if use_filter and game_id:
+        posts = [p for p in posts if p.game and p.game.id == game_id]
+
+    return render_template(
+        "forum.html",
+        posts=posts,
+        games=games,
+        selected_game=game_id,
+        use_filter=use_filter
+    )
 
 @app.route("/forum/<int:post_id>")
 def post_detail(post_id):
     post = fetch_post(post_id)
     return render_template("post_detail.html", post=post)
 
+@app.route("/forum/<int:post_id>/", methods=["POST"])
+def post_comment(post_id):
+    data = request.form.to_dict()
+    add_comment(post_id, data['body'], session['login'])
+    return redirect(url_for("post_detail", post_id=post_id))
+
+
+
 @app.route("/forum/new", methods=["POST", "GET"])
 def new_post():
+    games = mock_games
+
     if request.method == "POST":
             form_data = request.form.to_dict()
-
-            # Walidacja danych formularza
             try:
                 post_data = NewPost(**form_data)
                 add_post(post_data)
@@ -130,24 +148,26 @@ def new_post():
 
             return redirect(url_for("forum"))
 
-    return render_template("post_form.html")
+    return render_template("post_form.html", games=games)
 
 
 @app.route("/auth/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        data = request.get_json()
+        data = request.form.to_dict()
         username = data['username']
-        pwd = data['password']
+        pwd = data['pwd']
         repeated_pwd = data['repeated-pwd']
         if pwd != repeated_pwd:
             flash("Hasła nie sa takie same", "error")
-        elif check_user(username, pwd):
+            return
+        elif not check_user(username, pwd):
+            add_user(username, pwd)
+            print("cos")
             flash("Udało się zarejestrować", "success")
-            return render_template("login.html")
+            return redirect(url_for("login"))
         else:
-            flash("Błedne dane logownia", "error")
-
+            flash("Użytkownik istnieje lool", "error")
 
 
     return render_template('register.html')
@@ -165,10 +185,7 @@ def login():
             return redirect("/")
         else:
             flash("Błedne dane logownia", "error")
-
     return render_template('login.html')
-
-
 
 @app.route("/auth/logout")
 def logout():
