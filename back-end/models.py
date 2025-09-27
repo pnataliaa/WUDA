@@ -24,7 +24,7 @@ class Game(Base):
     playtime = Column(Integer, nullable=False)
     short_description = Column(String(200), nullable=False)
     description = Column(String(400), nullable=False)
-    image_url = Column(String(100), nullable=True)
+    image_url = Column(String(1000), nullable=True)
 
     posts = relationship("Post", back_populates="game")
 
@@ -49,6 +49,7 @@ class Comment(Base):
 
     id = Column(Integer, primary_key=True)
     content = Column(String(250), nullable=False)
+    created_at = Column(Date, nullable=False)
     post_id = Column(Integer, ForeignKey("posts.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 

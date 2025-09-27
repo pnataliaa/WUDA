@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Nowy post{% endblock %}
 {% block content %}
+{% if curr_user %}
 <section class="form-card">
+
   <h2>Dodaj nowy post</h2>
   <form method="post" class="form">
     <div class="form-group">
@@ -17,6 +19,7 @@
     <div class="form-group">
       <label for="game">Gra</label>
       <select id="game" name="game_id" required>
+          <option value="-1">-- Wybierz grę -- </option>
         {% for game in games %}
           <option value="{{ game.id }}">{{ game.title }}</option>
         {% endfor %}
@@ -25,5 +28,21 @@
 
     <button type="submit" class="btn">Dodaj post</button>
   </form>
+
 </section>
+{% else %}
+  <div class="post-card">
+
+    <a style=" text-decoration:underline" href="{{ url_for('login') }}">
+      <p>Musisz być zalogowany, aby dodać nową planszówkę.</p>
+      Zaloguj się
+    </a>
+  </div>
+{% endif %}
+
+
+
+
+
+
 {% endblock %}

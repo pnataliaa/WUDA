@@ -1,6 +1,20 @@
 from datetime import datetime
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
+from flask import session
+import requests
+BACKEND_URL = "http://localhost:5000"
+
+
+
+class Login(BaseModel):
+    username: str
+    password: str
+
+class RegisterUser(Login):
+    email: EmailStr
+    repeat_pwd: str
+
 
 class User(BaseModel):
     id: int
@@ -8,13 +22,13 @@ class User(BaseModel):
 
 class Comment(BaseModel):
     id: int
-    body: str
+    content: str
     created_at: datetime
     author: User
 
-class Game(BaseModel):
+class GameSelectBox(BaseModel):
     id: int
-    name: str
+    title: str
 
 class Post(BaseModel):
     id: int
@@ -22,7 +36,7 @@ class Post(BaseModel):
     body: str
     created_at: datetime
     author: User
-    game: Optional[Game] = None
+    game: Optional[GameSelectBox] = None
     comments: List[Comment] = []
 
 class NewPost(BaseModel):
@@ -30,100 +44,102 @@ class NewPost(BaseModel):
     body: str = Field(min_length=5)
     game_id: int
 
+class NewComment(BaseModel):
+    content: str
 
 
-USERS = [
-    {"id": 1, "username": "adam"},
-    {"id": 2, "username": "ola"},
-    {"id": 3, "username": "kasia"},
-    {
-        "id": 4,
-        "username": "John",
-        "password": "doe"
-    }
-]
-
-POSTS = [
-    {
-        "id": 1,
-        "title": "Pierwszy wpis",
-        "body": "To jest treść mojego pierwszego posta!",
-        "created_at": datetime(2025, 9, 19, 14, 35).isoformat(),
-        "author": USERS[0],
-        "game": {
-            "name": "Carcasone",
-            "id": 2,
-        },
-        "comments": [
-            {
-                "id": 1,
-                "body": "Super post! 👏",
-                "created_at": datetime(2025, 9, 19, 15, 00).isoformat(),
-                "author": USERS[1],
-            }
-        ],
-    },
-    {
-        "id": 2,
-        "title": "Drugi wpis",
-        "body": "Trochę krótszy post testowy",
-        "created_at": datetime(2025, 9, 19, 16, 10).isoformat(),
-        "author": USERS[2],
-        "comments": [],
-        "game": None
-    }
-]
-
+class NewGame(BaseModel):
+    title: str
+    players: str
+    playtime: int
+    short_description: str
+    description: str
+    image_url: str
 
 def fetch_posts():
-    return [Post.model_validate(p) for p in POSTS]
+    response = requests.get(
+        url = f"{BACKEND_URL}/posts",
+    )
+    response.raise_for_status()
+    return [Post.model_validate(p) for p in response.json()]
 
 def fetch_post(post_id: int):
-    return [Post.model_validate(p) for p in POSTS if p['id'] == post_id][0]
-
-def add_post(post: NewPost):
-    POSTS.append(
-        Post(
-            id= len(POSTS)+1,
-            title=post.title,
-            body=post.body,
-            created_at=datetime(2025, 9, 19, 16, 10).isoformat(),
-            author= USERS[2],
-        ).model_dump()
+    response = requests.get(
+        url = f"{BACKEND_URL}/posts/{post_id}",
+        # params={"post_id": post_id}
     )
+    response.raise_for_status()
+    print(response.json())
+    return Post.model_validate(response.json())
 
+def add_post(post: NewPost) -> bool:
 
-def add_user(username: str, passwd: str) -> bool:
-    user = [user for user in USERS if user['username'] == username]
-    if len(user) == 0:
-        USERS.append({
-            "id": len(USERS)+1,
-            "username": username,
-            "password": passwd
-        })
+    if post.game_id == -1:
+        data = post.model_dump(exclude="game_id")
+    else:
+        data = post.model_dump()
+
+    response = requests.post(
+        headers = {"Authorization": f"Bearer {session['access-token']}" },
+        url = f"{BACKEND_URL}/posts", json=data
+    )
+    if response.status_code == 201:
         return True
-    return False
+    else:
+        return False
 
-def check_user(username: str, password: str) -> bool:
 
-    user = [user for user in USERS if user['username'] == username]
-    if len(user) != 0:
-        if user[0]['password'] == password:
-            return True
-    return False
 
-def add_comment(post_id: int, comment_content: str, user: str) -> bool:
-    post = fetch_post(post_id)
-    # user = [user for user in USERS if user['username'] == user][0]
-    comment = Comment(
-        id=len(post.comments)+1,
-        body=comment_content,
-        created_at=datetime.now().isoformat(),
-        author=User(
-            id=1,
-            username=user
-        )
+def add_comment(post_id: int, comment_content: NewComment) -> bool:
+    data = comment_content.model_dump()
+
+    response = requests.post(
+        headers = {"Authorization": f"Bearer {session['access-token']}" },
+        url = f"{BACKEND_URL}/posts/{post_id}/comments",
+        json=data
     )
-    POSTS[post_id-1]['comments'].append(comment.model_dump())
-    print(POSTS)
+    response.raise_for_status()
+
     return True
+
+
+def login_user(user: Login) -> dict[str, str] | None:
+    payload = user.model_dump()
+    response = requests.post(
+        f"{BACKEND_URL}/auth/login", json=payload
+    )
+    if response.status_code == 200:
+        return response.json()
+    return None
+
+
+def register_user(user: RegisterUser) -> dict[str, str] | None:
+    payload = user.model_dump(exclude="repeat_pwd")
+    response = requests.post(
+          f"{BACKEND_URL}/auth/register", json=payload
+    )
+    if response.status_code == 201:
+        return response.json()
+    return None
+
+
+def add_game_req(new_game: dict):
+    response = requests.post(
+        headers = {"Authorization": f"Bearer {session['access-token']}" },
+        url=f"{BACKEND_URL}/games", json=new_game
+    )
+    response.raise_for_status()
+    return True
+def get_games_req(game_id=None):
+    if game_id:
+        part=f"/games/{game_id}"
+    else:
+        part="/games"
+
+    response = requests.get(
+
+        url=f"{BACKEND_URL}{part}"
+    )
+    response.raise_for_status()
+    print(response.json())
+    return response.json()

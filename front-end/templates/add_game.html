@@ -2,6 +2,7 @@
 {% block title %}Dodaj planszówkę{% endblock %}
 
 {% block content %}
+{% if curr_user %}
 <h1>Dodaj nową planszówkę</h1>
 
 <form action="{{ url_for('add_game') }}" method="post" class="game-form">
@@ -20,12 +21,17 @@
   <label>Pełny opis:
     <textarea name="description"></textarea>
   </label>
-  <label>Zasady w skrócie:
-    <textarea name="rules_short"></textarea>
-  </label>
   <label>Adres obrazka:
     <input type="url" name="image_url">
   </label>
   <button type="submit" class="button">Zapisz</button>
 </form>
+{% else %}
+  <div class="post-card">
+    <a style=" text-decoration:underline" href="{{ url_for('login') }}">
+      <p>Musisz być zalogowany, aby dodać nową planszówkę.</p>
+      Zaloguj się
+    </a>
+  </div>
+{% endif %}
 {% endblock %}

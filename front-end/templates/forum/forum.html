@@ -20,7 +20,7 @@
           {% for game in games %}
             <option value="{{ game.id }}"
               {% if selected_game == game.id %}selected{% endif %}>
-              {{ game.name }}
+              {{ game.title }}
             </option>
           {% endfor %}
           <option value="none" {% if selected_game == "none" %}selected{% endif %}>Brak gry</option>

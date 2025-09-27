@@ -4,16 +4,15 @@
 {% block content %}
 <article class="game-detail">
   <div class="detail-grid">
-    <img class="detail-cover" src="{{ game.image_url or url_for('static','img/placeholder.png') }}" alt="Okładka {{ game.title }}">
+    <img class="detail-cover" src="{{ game.image_url or url_for('static',filename='img/placeholder.png') }}" alt="Okładka {{ game.title }}">
     <div class="detail-info">
       <h1>{{ game.title }}</h1>
-      <p class="muted">Właściciel: {{ game.owner }}</p>
       <p><strong>Gracze:</strong> {{ game.players }}</p>
       <p><strong>Czas gry:</strong> {{ game.playtime }} min</p>
       <h3>Opis</h3>
       <p>{{ game.description }}</p>
       <h3>Zasady w skrócie</h3>
-      <p>{{ game.rules_short }}</p>
+      <p>{{ game.short_description }}</p>
       <a class="button" href="{{ url_for('index') }}">&larr; Powrót</a>
     </div>
   </div>

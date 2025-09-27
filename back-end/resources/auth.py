@@ -1,27 +1,10 @@
 from flask_restful import Resource, request
 from database import SessionLocal
 import models
-from datetime import date
-from marshmallow import Schema, fields
 from marshmallow import ValidationError
-
-
-class LoginUserSchema(Schema):
-    username = fields.Str(required=True)
-    password = fields.Str(required=True)
-
-class RegisterUser(LoginUserSchema):
-    email = fields.Email(required=True)
-
-class CheckUser(Schema):
-    username = fields.Str(required=True)
-
-
-check_username = CheckUser()
-login_schema = LoginUserSchema()
-register_schema = RegisterUser()
-
-
+from resources.schemas import check_username, register_schema, login_schema
+from flask_jwt_extended import create_access_token
+from datetime import timedelta
 
 class RegisterUser(Resource):
     def get(self):
@@ -40,7 +23,7 @@ class RegisterUser(Resource):
         session.close()
         if user:
             return { "username": user.username}, 200
-        return {"message": "User not found"}, 200
+        return {"message": "User not found"}, 404
 
     def post(self):
         data = request.get_json()
@@ -82,6 +65,12 @@ class LoginUser(Resource):
 
         if user:
             if user.password == data['password']:
-                return {"message": "Logged in"}, 200
+                jwt_token = create_access_token(
+                    identity=str(user.id),
+                    expires_delta=timedelta(hours=1),
+                )
+                return {"access_token": jwt_token}, 200
+            else:
+                return {"message": "Invalid credentials"}, 401
         else:
             return {"message": "User not found"}, 404
