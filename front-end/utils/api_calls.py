@@ -69,7 +69,6 @@ def fetch_post(post_id: int):
         # params={"post_id": post_id}
     )
     response.raise_for_status()
-    print(response.json())
     return Post.model_validate(response.json())
 
 def add_post(post: NewPost) -> bool:

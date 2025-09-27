@@ -1,7 +1,20 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from utils.api_calls import fetch_post, NewComment, fetch_posts, NewPost, add_post, add_comment, Login, login_user, register_user, RegisterUser, add_game_req, get_games_req
 from pydantic import ValidationError
-from settings import SECRET_KEY
+from settings import SECRET_KEY, SERVER_PORT
+import logging
+
+
+logging.basicConfig(
+    level=logging.ERROR,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    filename="app_errors.log",
+)
+logger = logging.getLogger(__name__)
+
+
+
+
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
@@ -11,7 +24,10 @@ def inject_user_info():
         return dict(curr_user=session['login'])
     return dict(curr_user=None)
 
-
+@app.errorhandler(500)
+def internal_server_error(e):
+    logger.exception("Internal server error: %s", e)
+    return render_template("500.html"), 500
 
 @app.route("/game/<int:game_id>")
 def game_detail(game_id):
@@ -103,7 +119,7 @@ def register():
             flash("Nie udało się utworzyć użytkownika", "error")
     return render_template('auth/register.html')
 
-
+# @app.route("/")
 @app.route("/auth/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -125,3 +141,8 @@ def logout():
     session.pop("access-token", None)
     flash("Wylogowano", "success")
     return redirect("/")
+
+if __name__ =="__main__":
+    app.run(
+        port=SERVER_PORT
+    )
