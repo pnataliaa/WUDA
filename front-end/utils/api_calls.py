@@ -3,7 +3,7 @@ from typing import List, Optional
 from pydantic import BaseModel, Field, EmailStr
 from flask import session
 import requests
-BACKEND_URL = "http://localhost:5000"
+from settings import BACKEND_URL
 
 
 

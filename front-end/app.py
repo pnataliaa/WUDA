@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from utils.api_calls import fetch_post, NewComment, fetch_posts, NewPost, add_post, add_comment, Login, login_user, register_user, RegisterUser, add_game_req, get_games_req
 from pydantic import ValidationError
+from settings import SECRET_KEY
 
 app = Flask(__name__)
-app.secret_key = "asdsadsadkj"
+app.secret_key = SECRET_KEY
 @app.context_processor
 def inject_user_info():
     if session.get("login", None):
