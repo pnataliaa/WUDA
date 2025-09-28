@@ -4,13 +4,20 @@ from database import init_db, check_database
 from resources.posts import *
 from resources.auth import *
 from resources.game import *
-
+import logging
 from settings import JWT_KEY, APP_PORT, APP_HOST
 from flask_jwt_extended import JWTManager
 app = Flask(__name__)
 api = Api(app)
 app.config['JWT_SECRET_KEY'] = JWT_KEY
 jwt = JWTManager(app)
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    filename="app_errors.log",
+)
+logger = logging.getLogger(__name__)
 
 init_db()
 

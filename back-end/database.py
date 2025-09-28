@@ -8,8 +8,13 @@ SessionLocal = scoped_session(sessionmaker(autocommit=False, autoflush=False, bi
 def init_db():
     import models
   # importujemy modele, żeby Base je zarejestrowało
-    models.Base.metadata.create_all(bind=engine)
-    load_data()
+    try:
+      models.Base.metadata.create_all(bind=engine)
+      load_data()
+    except :
+      from app import logger
+      logger.error("Database did not manage to connect. Endpoints besides liveness will not work")
+
 
 def check_database():
     try:

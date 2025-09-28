@@ -6,17 +6,18 @@ from marshmallow import ValidationError
 from sqlalchemy.orm import joinedload
 from resources.schemas import *
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from json import loads
+from app import logger
+
 
 class PostDetails(Resource):
     def get(self, post_id: int):
         session = SessionLocal()
+        logger.info("Retrieving post")
         post = session.query(models.Post).filter(
             models.Post.id == post_id
         ).first()
         return_dump = details_schema.dump(post)
         session.close()
-        print(return_dump)
         if post:
             return return_dump, 200
         else:
@@ -70,7 +71,7 @@ class PostComments(Resource):
             data = comment_add_schema.load(data)
         except ValidationError:
             return {"message": "Wrong request"}, 400
-
+        logger.info("Adding new post post")
         session = SessionLocal()
         post = session.query(models.Post).filter(models.Post.id == post_id).first()
         if not post:

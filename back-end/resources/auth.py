@@ -5,6 +5,7 @@ from marshmallow import ValidationError
 from resources.schemas import check_username, register_schema, login_schema
 from flask_jwt_extended import create_access_token
 from datetime import timedelta
+from app import logger
 
 class RegisterUser(Resource):
     def get(self):
@@ -15,12 +16,13 @@ class RegisterUser(Resource):
             data = check_username.load(data)
         except ValidationError as error:
             return {"message": "Wrong request"}, 400
-
+        logger.info("fetching username")
         session = SessionLocal()
         user = session.query(models.User).filter(
             models.User.username == data['username']
         ).first()
         session.close()
+        logger.info("returning username")
         if user:
             return { "username": user.username}, 200
         return {"message": "User not found"}, 404
@@ -35,14 +37,14 @@ class RegisterUser(Resource):
         except ValidationError as error:
             return {"message": "Invalid request"}, 400
         new_user = models.User(**data)
-
+        logger.info("Checking if username exist")
         session = SessionLocal()
         user = session.query(models.User).filter(
             models.User.username == data['username']
         ).first()
         if user:
             return {"message": "User already exist"}, 409
-
+        logger.info("Registering new user username")
         session.add(new_user)
         session.commit()
         session.refresh(new_user)
@@ -58,6 +60,7 @@ class LoginUser(Resource):
             data = login_schema.load(data)
         except ValidationError as error:
             return {"message": "Wrong request"}, 400
+        logger.info("Validating input")
         session = SessionLocal()
         user = session.query(models.User).filter(
             models.User.username == data['username']
