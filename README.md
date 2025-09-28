@@ -70,3 +70,20 @@ SERVER_PORT=8000
 ```bash
 python3 app.py
 ```
+
+## Database setup
+Required is postgresql. Either run given docker-compose.yaml file or provide setup for backend's `.env` file
+
+
+```yaml
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: alamakota
+      POSTGRES_USER: board_games
+      POSTGRES_DB: games
+    ports:
+      - 5432:5432
+```
+
