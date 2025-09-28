@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch
-from app import app, RegisterUser, Login, NewPost, NewComment
+from app import app, RegisterUser
 
 @pytest.fixture
 def client():
