@@ -1,0 +1,9 @@
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: alamakota
+      POSTGRES_USER: board_games
+      POSTGRES_DB: games
+    ports:
+      - 5432:5432
