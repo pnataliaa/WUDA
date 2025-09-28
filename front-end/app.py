@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from utils.api_calls import fetch_post, NewComment, fetch_posts, NewPost, add_post, add_comment, Login, login_user, register_user, RegisterUser, add_game_req, get_games_req
 from pydantic import ValidationError
-from settings import SECRET_KEY, SERVER_PORT
+from settings import SECRET_KEY, APP_PORT
 import logging
 
 
@@ -144,5 +144,5 @@ def logout():
 
 if __name__ =="__main__":
     app.run(
-        port=SERVER_PORT
+        port=APP_PORT
     )

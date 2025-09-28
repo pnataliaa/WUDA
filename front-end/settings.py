@@ -6,4 +6,5 @@ hostname = environ.get('BACKEND_HOSTNAME', 'localhost')
 port = environ.get("BACKEND_PORT", 5000)
 SECRET_KEY = environ['SECRET_KEY']
 BACKEND_URL = f"http://{hostname}:{port}"
-SERVER_PORT = environ.get('SERVER_PORT', 8000)
+APP_PORT = environ.get('APP_PORT', 8000)
+APP_HOST = environ.get('APP_HOST', "localhost")
