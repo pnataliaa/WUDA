@@ -2,6 +2,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, scoped_session
 from settings import DATABASE_URL
 from models import Game
+from logger import LOGGER
 
 engine = create_engine(DATABASE_URL, echo=True, future=True)
 SessionLocal = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
@@ -12,8 +13,7 @@ def init_db():
       models.Base.metadata.create_all(bind=engine)
       load_data()
     except :
-      from app import logger
-      logger.error("Database did not manage to connect. Endpoints besides liveness will not work")
+      LOGGER.error("Database did not manage to connect. Endpoints besides liveness will not work")
 
 
 def check_database():
@@ -39,3 +39,4 @@ def load_data():
       ))
       session.commit()
       session.close()
+      LOGGER.error("Preloaded database")

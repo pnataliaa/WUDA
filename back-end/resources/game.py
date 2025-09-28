@@ -4,7 +4,7 @@ from database import SessionLocal
 import models
 from resources.schemas import game_schema, games_schema
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app import logger
+from logger import LOGGER
 
 
 
@@ -12,11 +12,11 @@ class GameList(Resource):
     def get(self, game_id=None):
         session = SessionLocal()
         if game_id == None:
-            logger.info("Id not provided, retrieving all games")
+            LOGGER.info("Id not provided, retrieving all games")
             games = session.query(models.Game).all()
             return_object = games_schema.dump(games)
         else:
-            logger.info("Id provided, retrieving single game")
+            LOGGER.info("Id provided, retrieving single game")
             game = session.query(models.Game).filter(
                 models.Game.id == game_id
             ).first()
@@ -32,11 +32,11 @@ class GameList(Resource):
         if not data:
             return {"message": "Sent empty request"}, 400
         try:
-            logger.info("Validating")
+            LOGGER.info("Validating")
             game_data = game_schema.load(data)
         except ValidationError:
             return {"message": "Invalid request"}, 400
-        logger.info("Adding data")
+        LOGGER.info("Adding data")
         new_game = models.Game(**game_data)
         session = SessionLocal()
         session.add(new_game)
