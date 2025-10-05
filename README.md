@@ -87,3 +87,10 @@ services:
       - 5432:5432
 ```
 
+## For students.
+In `tasks` directory there are clear instructions for each task that you should do in order to pass the course.
+Recommended order:
+1. [CICD](./tasks/CICD.md)
+2. [Kubernetes](./tasks/kubernetes.md)
+3. [Monitoring](./tasks/monitoring.md)
+
