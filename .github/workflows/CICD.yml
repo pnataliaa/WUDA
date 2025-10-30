@@ -60,6 +60,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pytest-logs
-          path: back-end/pytest-log.txt
-          if-no-files-found: ignore
+          path: pytest-log.txt
 
