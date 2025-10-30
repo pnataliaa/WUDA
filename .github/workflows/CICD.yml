@@ -54,7 +54,7 @@ jobs:
       - name: Run back-end tests
         working-directory: back-end
         run: |
-          pytest test_app.py --maxfail=1 --disable-warnings -q > pytest-log.txt || true
+          pytest test_app.py --maxfail=1 --disable-warnings -q > pytest-log.txt 2>&1 || true
 
       - name: Upload Pytest Logs
         uses: actions/upload-artifact@v4
