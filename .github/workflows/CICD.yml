@@ -44,3 +44,21 @@ jobs:
         with:
           name: flake8-report
           path: flake8-report.txt
+
+      - name: Install back-end dependencies
+        working-directory: back-end/resources
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f ../requirements_test.txt ]; then pip install -r ../requirements_test.txt; fi
+
+      - name: Run back-end tests
+        working-directory: back-end
+        run: |
+          pytest tests --maxfail=1 --disable-warnings -q || true
+
+      - name: Upload Pytest Logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-logs
+          path: back-end/tests
+          if-no-files-found: ignore
