@@ -71,4 +71,26 @@ jobs:
           path: back-end/pytest-log.txt
           if-no-files-found: ignore
 
+      - name: Install front-end dependencies
+        working-directory: front-end
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f requirements_test.txt ]; then pip install -r requirements_test.txt; fi
+      
+      - name: Run front-end tests
+        working-directory: front-end
+        env:
+            POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}    
+            APP_PORT: ${{ secrets.APP_PORT }}               
+            SECRET_KEY: ${{ secrets.SECRET_KEY }}
+            SERVER_PORT: ${{ secrets.SERVER_PORT }}
+        run: |
+            pytest test_app.py --maxfail=1 --disable-warnings -q 2>&1 | tee pytest-log.txt || true
+      
+      - name: Upload Front-end Pytest Logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-pytest-logs
+          path: front-end/pytest-log.txt
+          if-no-files-found: ignore
 
