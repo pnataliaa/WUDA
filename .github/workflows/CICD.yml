@@ -1,4 +1,4 @@
-name: Python Code Vulnerability Scan and Lint
+name: CICD
 
 on:
   push:
