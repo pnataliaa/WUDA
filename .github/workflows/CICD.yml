@@ -53,8 +53,16 @@ jobs:
 
       - name: Run back-end tests
         working-directory: back-end
+        env:
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          PORT: ${{ secrets.PORT }}
+          JWT_KEY: ${{ secrets.JWT_KEY }}
+          APP_PORT: ${{ secrets.APP_PORT }}
         run: |
-          pytest test_app.py --maxfail=1 --disable-warnings -q > pytest-log.txt 2>&1 || true
+          pytest test_app.py --maxfail=1 --disable-warnings -q 2>&1 | tee pytest-log.txt || true
 
       - name: Upload Pytest Logs
         uses: actions/upload-artifact@v4
