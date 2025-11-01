@@ -101,10 +101,12 @@ jobs:
           username: ${{ secrets.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_TOKEN }}
 
-      - name: Build Docker image
+      - name: Build and push Back-End Docker image
         run: |
-          docker build -t ghcr.io/${{ secrets.GHCR_USERNAME }}/my-app:latest .
+          docker build -f back-end/Dockerfile -t ghcr.io/${{ secrets.GHCR_USERNAME }}/backend:latest back-end
+          docker push ghcr.io/${{ secrets.GHCR_USERNAME }}/backend:latest
 
-      - name: Push Docker image to GitHub Container Registry
+      - name: Build and push Front-End Docker image
         run: |
-          docker push ghcr.io/${{ secrets.GHCR_USERNAME }}/my-app:latest
+          docker build -f front-end/Dockerfile -t ghcr.io/${{ secrets.GHCR_USERNAME }}/frontend:latest front-end
+          docker push ghcr.io/${{ secrets.GHCR_USERNAME }}/frontend:latest
