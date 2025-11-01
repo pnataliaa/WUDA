@@ -94,3 +94,14 @@ jobs:
           path: front-end/pytest-log.txt
           if-no-files-found: ignore
 
+      - name: Log in to GitHub Container Registry
+        run: |
+          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCR_USERNAME }}" 
+
+      - name: Build Docker image
+        run: |
+          docker build -t ghcr.io/${{ secrets.GHCR_USERNAME }}/my-app:latest .
+
+      - name: Push Docker image to GitHub Container Registry
+        run: |
+          docker push ghcr.io/${{ secrets.GHCR_USERNAME }}/my-app:latest
