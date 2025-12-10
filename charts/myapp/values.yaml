@@ -3,11 +3,7 @@ frontend:
     repository: ghcr.io/pnataliaa/frontend
     tag: "latest"
   replicas: 1
-  
-  frontend:
   service:
-    port: 80
-    targetPort: 5000
     nodePort: 30080
 
 backend:
@@ -16,23 +12,13 @@ backend:
     tag: "latest"
   replicas: 1
 
-  service:
-    type: ClusterIP
-    port: 5000
-    targetPort: 5000
-
 database:
   image:
     repository: postgres
     tag: "15"
   replicas: 1
 
-  service:
-    type: ClusterIP
-    port: 5432
-    targetPort: 5432
-    
 environment:
-  frontendPort: 5000
+  frontendPort: 8000
   backendPort: 5000
   databasePort: 5432
