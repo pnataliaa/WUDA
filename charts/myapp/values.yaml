@@ -31,3 +31,8 @@ database:
     type: ClusterIP
     port: 5432
     targetPort: 5432
+    
+environment:
+  frontendPort: 8000
+  backendPort: 5000
+  databasePort: 5432
