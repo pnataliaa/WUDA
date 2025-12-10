@@ -7,6 +7,8 @@ spec:
   selector:
     app: myapp-frontend
   ports:
-    - port: {{ .Values.environment.frontendPort }}
+    - name: http
+      protocol: TCP
+      port: 80
       targetPort: {{ .Values.environment.frontendPort }}
       nodePort: {{ .Values.frontend.service.nodePort }}
