@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+          image: {{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}
           ports:
             - containerPort: {{ .Values.environment.backendPort }}
           env:
@@ -27,10 +27,10 @@ spec:
             - name: POSTGRES_HOST
               value: "myapp-database"
             - name: PORT
-              value: "{{ .Values.environment.databasePort | quote }}"
+              value: "{{ .Values.environment.databasePort }}"
             - name: JWT_KEY
               value: "change-me"
             - name: APP_PORT
-              value: "{{ .Values.environment.backendPort | quote }}"
+              value: "{{ .Values.environment.backendPort }}"
             - name: APP_HOST
               value: "0.0.0.0"
