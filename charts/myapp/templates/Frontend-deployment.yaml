@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-frontend
+spec:
+  replicas: {{ .Values.frontend.replicas }}
+  selector:
+    matchLabels:
+      app: myapp-frontend
+  template:
+    metadata:
+      labels:
+        app: myapp-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.environment.frontendPort }}
+          env:
+            - name: BACKEND_HOSTNAME
+              value: "myapp-backend"
+            - name: BACKEND_PORT
+              value: "{{ .Values.environment.backendPort | quote }}"
+            - name: APP_PORT
+              value: "{{ .Values.environment.frontendPort | quote }}"
+            - name: APP_HOST
+              value: "0.0.0.0"
+            - name: SECRET_KEY
+              value: "change-me"
