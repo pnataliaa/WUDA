@@ -14,16 +14,16 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+          image: {{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}
           ports:
             - containerPort: {{ .Values.environment.frontendPort }}
           env:
             - name: BACKEND_HOSTNAME
               value: "myapp-backend"
             - name: BACKEND_PORT
-              value: "{{ .Values.environment.backendPort | quote }}"
+              value: "{{ .Values.environment.backendPort }}"
             - name: APP_PORT
-              value: "{{ .Values.environment.frontendPort | quote }}"
+              value: "{{ .Values.environment.frontendPort }}"
             - name: APP_HOST
               value: "0.0.0.0"
             - name: SECRET_KEY
