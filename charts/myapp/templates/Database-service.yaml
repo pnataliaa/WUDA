@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-database
+spec:
+  selector:
+    app: myapp-database
+  ports:
+    - port: {{ .Values.environment.databasePort }}
+      targetPort: {{ .Values.environment.databasePort }}
