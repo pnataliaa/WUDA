@@ -22,9 +22,9 @@ spec:
             - name: BACKEND_HOSTNAME
               value: "myapp-backend"
             - name: BACKEND_PORT
-              value: "{{ .Values.environment.backendPort }}"
+              value: "{{ .Values.environment.backendPort | quote }}"
             - name: APP_PORT
-              value: "{{ .Values.environment.frontendPort }}"
+              value: "{{ .Values.environment.frontendPort | quote }}"
             - name: APP_HOST
               value: "0.0.0.0"
             - name: SECRET_KEY
