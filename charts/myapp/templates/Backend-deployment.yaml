@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-backend
+spec:
+  replicas: {{ .Values.backend.replicas }}
+  selector:
+    matchLabels:
+      app: myapp-backend
+  template:
+    metadata:
+      labels:
+        app: myapp-backend
+    spec:
+      containers:
+        - name: backend
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.environment.backendPort }}
+          env:
+            - name: POSTGRES_DB
+              value: "games"
+            - name: POSTGRES_USER
+              value: "board_games"
+            - name: POSTGRES_PASSWORD
+              value: "alamakota"
+            - name: POSTGRES_HOST
+              value: "myapp-database"
+            - name: PORT
+              value: "{{ .Values.environment.databasePort | quote }}"
+            - name: JWT_KEY
+              value: "change-me"
+            - name: APP_PORT
+              value: "{{ .Values.environment.backendPort | quote }}"
+            - name: APP_HOST
+              value: "0.0.0.0"
