@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-database
+spec:
+  replicas: {{ .Values.database.replicas }}
+  selector:
+    matchLabels:
+      app: myapp-database
+  template:
+    metadata:
+      labels:
+        app: myapp-database
+    spec:
+      containers:
+        - name: postgres
+          image: "{{ .Values.database.image.repository }}:{{ .Values.database.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.environment.databasePort }}
+          env:
+            - name: POSTGRES_DB
+              value: "games"
+            - name: POSTGRES_USER
+              value: "board_games"
+            - name: POSTGRES_PASSWORD
+              value: "alamakota"
