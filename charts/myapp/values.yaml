@@ -3,11 +3,11 @@ frontend:
     repository: ghcr.io/pnataliaa/frontend
     tag: "latest"
   replicas: 1
-
+  
+  frontend:
   service:
-    type: NodePort
     port: 80
-    targetPort: 8000
+    targetPort: 5000
     nodePort: 30080
 
 backend:
